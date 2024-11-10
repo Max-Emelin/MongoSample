@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MongoSample"
         mc:Ignorable="d"
-        Title="Products" Height="450" Width="650">
+        Title="Products" Height="450" Width="850">
 
     <Window.Resources>
         <Style x:Key="ButtonStyle" TargetType="Button">
@@ -15,7 +15,8 @@
             <Setter Property="FontFamily" Value="Bell MT"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Background" Value="#FF7EE0D0"/>
+            <Setter Property="Background" Value="DarkSlateGray"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
         <Style x:Key="LabelStyle" TargetType="Label">
             <Setter Property="Width" Value="110"/>
@@ -24,7 +25,7 @@
             <Setter Property="FontFamily" Value="Bell MT"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Background" Value="#FFB27EE0"/>
+            <Setter Property="Background" Value="DarkSlateGray"/>
         </Style>
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <Setter Property="Width" Value="160"/>
@@ -36,6 +37,18 @@
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="AcceptsTab" Value="True"/>
             <Setter Property="Background" Value="#FFBAFBE2"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Background" Value="#FF272727"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="DarkSlateGray"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
     </Window.Resources>
 
@@ -75,7 +88,10 @@
                 Margin="15,180,15,15" 
                 AutoGenerateColumns="True"  
                 ItemsSource="{Binding productCollection}" 
-                FontSize="16" Background="#FF2B2929"    
+                FontSize="16"    
+                HeadersVisibility="Column" 
+                BorderBrush="DarkSlateGray"       
+                Background="Transparent" 
         />
 
         <Button x:Name="InsertButton"
@@ -115,6 +131,13 @@
                 Margin="500,125,0,0" 
                 Style="{StaticResource ButtonStyle}" 
                 Click="DeleteBulkButton_Click" 
+        />
+
+        <Button x:Name="UpsertButton"
+                Content="Upsert" 
+                Margin="620,35,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="UpsertButton_Click" 
         />
 
     </Grid>

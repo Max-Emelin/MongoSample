@@ -111,5 +111,53 @@ namespace MongoSample
 
             LoadProductData();
         }
+
+
+
+        private void FilterExamples()
+        {
+            var filterPriceGreaterOrEqualThen100 = Builders<Product>.Filter.Gte(p => p.Price, 100);
+            var filterPriceLessOrEqualThen100 = Builders<Product>.Filter.Lte(p => p.Price, 100);
+            var filterPriceLessThen100 = Builders<Product>.Filter.Lt(p => p.Price, 100);
+            var filterPriceGreaterThen100 = Builders<Product>.Filter.Gt(p => p.Price, 100);
+
+            var productCodeList = new List<string> { "101","102","103"};
+            var filterCodeInList = Builders<Product>.Filter.In(p => p.ProductCode, productCodeList);
+            var filterCodeNotInList = Builders<Product>.Filter.Nin(p => p.ProductCode, productCodeList);
+
+            var filterCodeEqual = Builders<Product>.Filter.Eq(p => p.ProductCode, "101");
+            var filterCodeNotEqual = Builders<Product>.Filter.Ne(p => p.ProductCode, "101");
+
+
+            // BIG filters
+            var filterCodeNotEqualAndGreater100 = Builders<Product>.Filter.Ne(p => p.ProductCode, "101") &
+                Builders<Product>.Filter.Gt(p => p.Price, 100);
+            var filterCodeNotEqualOrGreater100 = Builders<Product>.Filter.Ne(p => p.ProductCode, "101") |
+                Builders<Product>.Filter.Gt(p => p.Price, 100);
+
+
+            //Update 
+            var updateIncrementDefiniton = Builders<Product>.Update
+               .Inc(p => p.Price, decimal.Parse(productPriceTextBox.Text)); // + value
+            var updateMultyplyDefiniton = Builders<Product>.Update
+               .Mul(p => p.Price, decimal.Parse(productPriceTextBox.Text)); // * value
+            var updateMaxDefiniton = Builders<Product>.Update
+               .Max(p => p.Price, decimal.Parse(productPriceTextBox.Text)); // max(curr || value)
+            var updateMinDefiniton = Builders<Product>.Update
+               .Min(p => p.Price, decimal.Parse(productPriceTextBox.Text)); // min(curr || value)
+
+        }
+
+        private void UpsertButton_Click(object sender, RoutedEventArgs e)
+        {
+            var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCodeTextBox.Text);
+            var updateDefiniton = Builders<Product>.Update
+                .Set(p => p.ProductName, productNameTextBox.Text)
+                .Set(p => p.Price, decimal.Parse(productPriceTextBox.Text));
+
+            productCollection.UpdateOne(filterDefinition, updateDefiniton, new UpdateOptions { IsUpsert = true });
+
+            LoadProductData();
+        }
     }
 }
