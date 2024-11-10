@@ -14,8 +14,6 @@ namespace MongoSample
     {
         IMongoCollection<Product> productCollection;
 
-
-
         public MainWindow()
         {
             InitializeComponent();
@@ -28,8 +26,9 @@ namespace MongoSample
         private void LoadProductData()
         {
             var filterDefenition = Builders<Product>.Filter.Empty;
-            var products = productCollection.Find(filterDefenition).ToList();
-            productDataGridView.ItemsSource = products;
+
+            productDataGridView.ItemsSource = productCollection.Find(filterDefenition).ToList();
+            productCountLabel.Content = $"Count : {productCollection.CountDocuments(filterDefenition)}";
         }
 
         private void InitializeDB()
@@ -112,7 +111,17 @@ namespace MongoSample
             LoadProductData();
         }
 
+        private void UpsertButton_Click(object sender, RoutedEventArgs e)
+        {
+            var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCodeTextBox.Text);
+            var updateDefiniton = Builders<Product>.Update
+                .Set(p => p.ProductName, productNameTextBox.Text)
+                .Set(p => p.Price, decimal.Parse(productPriceTextBox.Text));
 
+            productCollection.UpdateOne(filterDefinition, updateDefiniton, new UpdateOptions { IsUpsert = true });
+
+            LoadProductData();
+        }
 
         private void FilterExamples()
         {
@@ -148,16 +157,22 @@ namespace MongoSample
 
         }
 
-        private void UpsertButton_Click(object sender, RoutedEventArgs e)
+        private void UpdateExamples()
         {
+            var findOneAndUpdateOptions = new FindOneAndUpdateOptions<Product>
+                { ReturnDocument = ReturnDocument.Before }; // returns old entity version
+            //  { ReturnDocument = ReturnDocument.After };  // returns new entity version
+
             var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCodeTextBox.Text);
             var updateDefiniton = Builders<Product>.Update
                 .Set(p => p.ProductName, productNameTextBox.Text)
                 .Set(p => p.Price, decimal.Parse(productPriceTextBox.Text));
 
-            productCollection.UpdateOne(filterDefinition, updateDefiniton, new UpdateOptions { IsUpsert = true });
+            var product = productCollection.FindOneAndUpdate(filterDefinition, updateDefiniton, findOneAndUpdateOptions);
 
             LoadProductData();
-        }
+
+            MessageBox.Show($"Name: {product.ProductName} \r\n Price: {product.Price}");
+        }       
     }
 }

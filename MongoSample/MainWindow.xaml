@@ -85,7 +85,7 @@
         />
         
         <DataGrid x:Name="productDataGridView"
-                Margin="15,180,15,15" 
+                Margin="15,180,15,50" 
                 AutoGenerateColumns="True"  
                 ItemsSource="{Binding productCollection}" 
                 FontSize="16"    
@@ -140,5 +140,11 @@
                 Click="UpsertButton_Click" 
         />
 
+        <Label x:Name="productCountLabel"
+            Content="Count: 0" 
+            Margin="50,0,0,20"
+            Style="{StaticResource LabelStyle}"
+            VerticalAlignment="Bottom"
+        />
     </Grid>
 </Window>
