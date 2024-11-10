@@ -5,8 +5,117 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MongoSample"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Products" Height="450" Width="650">
+
+    <Window.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Bell MT"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Background" Value="#FF7EE0D0"/>
+        </Style>
+        <Style x:Key="LabelStyle" TargetType="Label">
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Bell MT"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Background" Value="#FFB27EE0"/>
+        </Style>
+        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Bell MT"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsTab" Value="True"/>
+            <Setter Property="Background" Value="#FFBAFBE2"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#FF272727">
+        <Label x:Name="productCodeLabel"
+                Content="Product Code" 
+                Margin="50,35,0,0" 
+                Style="{StaticResource LabelStyle}"
+        />
+        <TextBox x:Name="productCodeTextBox" 
+                 Margin="175,35,0,0" 
+                 Style="{StaticResource TextBoxStyle}"                  
+        />
+
+        <Label x:Name="productNameLabel"
+                Content="Product Name" 
+                Margin="50,80,0,0" 
+                Style="{StaticResource LabelStyle}"
+        />
+        <TextBox x:Name="productNameTextBox" 
+                 Margin="175,80,0,0" 
+                 Style="{StaticResource TextBoxStyle}" 
+        />
+
+
+        <Label x:Name="productPriceLabel"
+                Content="Product Price" 
+                Margin="50,125,0,0"
+                Style="{StaticResource LabelStyle}"
+        />
+        <TextBox x:Name="productPriceTextBox" 
+                 Margin="175,125,0,0" 
+                 Style="{StaticResource TextBoxStyle}" 
+        />
+        
+        <DataGrid x:Name="productDataGridView"
+                Margin="15,180,15,15" 
+                AutoGenerateColumns="True"  
+                ItemsSource="{Binding productCollection}" 
+                FontSize="16" Background="#FF2B2929"    
+        />
+
+        <Button x:Name="InsertButton"
+                Content="Insert" 
+                Margin="380,35,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="InsertButton_Click"
+                
+        />
+        <Button x:Name="UpdateButton"
+                Content="Update" 
+                Margin="380,80,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="UpdateButton_Click"
+        />
+        <Button x:Name="DeleteButton"
+                Content="Delete" 
+                Margin="380,125,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="DeleteButton_Click"
+        />
+
+        <Button x:Name="InsertBulkButton"
+                Content="Bulk Insert" 
+                Margin="500,35,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="InsertBulkButton_Click" 
+        />
+        <Button x:Name="UpdateBulkButton"
+                Content="Bulk Update" 
+                Margin="500,80,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="UpdateBulkButton_Click" 
+        />
+        <Button x:Name="DeleteBulkButton"
+                Content="Bulk Delete" 
+                Margin="500,125,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="DeleteBulkButton_Click" 
+        />
 
     </Grid>
 </Window>
