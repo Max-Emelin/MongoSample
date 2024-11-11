@@ -13,9 +13,4 @@ namespace MongoSample.Entities
         [BsonElement("country_code"), BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public string CountryCode { get; set; }
     }
-
-    public class CountryLookedUp : Country
-    {
-        public List<Province> ProvinceList { get; set; }
-    }
 }

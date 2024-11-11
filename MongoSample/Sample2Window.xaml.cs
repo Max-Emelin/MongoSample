@@ -16,6 +16,51 @@ namespace MongoSample
 
             var database = ConnectDatabase();
 
+            //LookupFunc(database);
+            //ArrayFunc(database);
+            
+        }
+        private static void ArrayFunc(IMongoDatabase database)
+        {
+            //InsertColorProducts(database);
+
+            var colorProductCollection = database.GetCollection<ColorProduct>("color_product");
+
+            //Find
+            var findFilterDefinition = Builders<ColorProduct>.Filter.Empty;
+            var findColorProductList = colorProductCollection.Find(findFilterDefinition).ToList();
+
+            //Update
+            var updateFilterDefinition = Builders<ColorProduct>.Filter.Eq(cp => cp.ProductId, "673243422155ca4f74dca5be");
+            var updateColorProductList = colorProductCollection.Find(updateFilterDefinition).ToList();
+            var colors = new List<String> { "Orange", "Purple" };
+            var updateDefinition = Builders<ColorProduct>.Update.Set(cp => cp.Colors, colors);
+
+            colorProductCollection.UpdateOne(updateFilterDefinition, updateDefinition);
+
+        }
+
+        private static void UnwindFunc(IMongoDatabase database)
+        {
+            var colorProductCollection = database.GetCollection<ColorProduct>("color_product");
+
+
+            //Returns 5 entities with color difference
+            var allUnwindResult = colorProductCollection.Aggregate()
+                .Unwind<ColorProduct, ColorProductUnwindResult>(cp => cp.Colors)
+                .ToList();
+
+
+            //Filter unwind
+            var filterDefinition = Builders<ColorProduct>.Filter.Eq(cp => cp.ProductCode, "001");
+            var result = colorProductCollection.Aggregate()
+                .Match(filterDefinition)
+                .Unwind<ColorProduct, ColorProductUnwindResult>(cp => cp.Colors)
+                .ToList();
+        }
+
+        private static void LookupFunc(IMongoDatabase database)
+        {
             //InserValues(database);
 
             var countryCollection = database.GetCollection<Country>("country");
@@ -41,8 +86,6 @@ namespace MongoSample
                     p.ProvinceName
                 }))
                 .ToList();
-
-
         }
 
         private static void InserValues(IMongoDatabase database)
@@ -51,7 +94,7 @@ namespace MongoSample
             //UK - 67323a67004227a49e8c8ce2
 
             /*InsertCountries(database);
-            InsertProvince(database);*/
+            InsertProvinces(database);*/
         }
 
         private static void InsertCountries(IMongoDatabase database)
@@ -76,7 +119,7 @@ namespace MongoSample
             countryCollection.InsertMany(countryList);
         }
 
-        private static void InsertProvince(IMongoDatabase database)
+        private static void InsertProvinces(IMongoDatabase database)
         {
             var provinceList = new List<Province>()
             {
@@ -110,6 +153,36 @@ namespace MongoSample
             var provinceCollection = database.GetCollection<Province>("province");
 
             provinceCollection.InsertMany(provinceList);
+        }
+
+        private static void InsertColorProducts(IMongoDatabase database)
+        {
+            var colorProductList = new List<ColorProduct>
+            {
+                new ColorProduct
+                {
+                    ProductName = "Product 001",
+                    ProductCode = "001",
+                    Price = 10,
+                    Colors = new List<string>
+                    {
+                        "Black", "White", "Red"
+                    }
+                },
+                new ColorProduct
+                {
+                    ProductName = "Product 002",
+                    ProductCode = "002",
+                    Price = 20,
+                    Colors = new List<string>
+                    {
+                        "Green", "Blue", "Yellow"
+                    }
+                }
+            };
+            var colorProductCollection = database.GetCollection<ColorProduct>("color_product");
+
+            colorProductCollection.InsertMany(colorProductList);
         }
 
         private static IMongoDatabase ConnectDatabase()
