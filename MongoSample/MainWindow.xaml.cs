@@ -173,6 +173,26 @@ namespace MongoSample
             LoadProductData();
 
             MessageBox.Show($"Name: {product.ProductName} \r\n Price: {product.Price}");
-        }       
+        }
+
+        private void BulkWriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var productCodeList = new List<string> { "101", "102", "103", "110", "111", "112" };
+            var bulkWriteModelList = new List<WriteModel<Product>>();
+
+            foreach(var productCode in productCodeList)
+            {
+                var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCode);
+                var updateDefinition = Builders<Product>.Update
+                    .Set(p => p.ProductName, $"New product {productCode}")
+                    .Set(p => p.Price, 40);
+
+                bulkWriteModelList.Add(new UpdateOneModel<Product>(filterDefinition, updateDefinition) { IsUpsert = true});
+            }
+
+            productCollection.BulkWrite(bulkWriteModelList);
+
+            LoadProductData();
+        }
     }
 }

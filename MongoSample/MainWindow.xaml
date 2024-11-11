@@ -139,6 +139,12 @@
                 Style="{StaticResource ButtonStyle}" 
                 Click="UpsertButton_Click" 
         />
+        <Button x:Name="BulkWriteButton"
+                Content="Bulk Write" 
+                Margin="620,80,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="BulkWriteButton_Click" 
+        />  
 
         <Label x:Name="productCountLabel"
             Content="Count: 0" 
@@ -146,5 +152,6 @@
             Style="{StaticResource LabelStyle}"
             VerticalAlignment="Bottom"
         />
+        
     </Grid>
 </Window>
