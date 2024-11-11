@@ -1,6 +1,5 @@
 ﻿using MongoDB.Driver;
 using MongoSample.Entities;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.IO;
 using System.Windows;
@@ -33,7 +32,7 @@ namespace MongoSample
 
         private void InitializeDB()
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnection"].ConnectionString;
+            var connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnectionV1"].ConnectionString;
             var databaseName = MongoUrl.Create(connectionString).DatabaseName;
             var mongoClient = new MongoClient(connectionString);
             var database = mongoClient.GetDatabase(databaseName);
@@ -125,12 +124,13 @@ namespace MongoSample
 
         private void FilterExamples()
         {
+            //filters
             var filterPriceGreaterOrEqualThen100 = Builders<Product>.Filter.Gte(p => p.Price, 100);
             var filterPriceLessOrEqualThen100 = Builders<Product>.Filter.Lte(p => p.Price, 100);
             var filterPriceLessThen100 = Builders<Product>.Filter.Lt(p => p.Price, 100);
             var filterPriceGreaterThen100 = Builders<Product>.Filter.Gt(p => p.Price, 100);
 
-            var productCodeList = new List<string> { "101","102","103"};
+            var productCodeList = new List<string> { "101", "102", "103" };
             var filterCodeInList = Builders<Product>.Filter.In(p => p.ProductCode, productCodeList);
             var filterCodeNotInList = Builders<Product>.Filter.Nin(p => p.ProductCode, productCodeList);
 
@@ -155,12 +155,26 @@ namespace MongoSample
             var updateMinDefiniton = Builders<Product>.Update
                .Min(p => p.Price, decimal.Parse(productPriceTextBox.Text)); // min(curr || value)
 
+
+            //Find
+            var findFilterDefinition = Builders<Product>.Filter.Empty;
+            var products = productCollection.Find(findFilterDefinition)
+                .Limit(2) //max number records
+                .Skip(3)  //skip first {value} records
+                .SortBy(p => p.Price) //from min to max
+                .SortByDescending(p => p.Price) //from max to min
+
+                .SortByDescending(p => p.Price)
+                .ThenByDescending(p => p.ProductCode) // 2x sort condition
+
+                .ToList();
+
         }
 
         private void UpdateExamples()
         {
             var findOneAndUpdateOptions = new FindOneAndUpdateOptions<Product>
-                { ReturnDocument = ReturnDocument.Before }; // returns old entity version
+            { ReturnDocument = ReturnDocument.Before }; // returns old entity version
             //  { ReturnDocument = ReturnDocument.After };  // returns new entity version
 
             var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCodeTextBox.Text);
@@ -180,19 +194,82 @@ namespace MongoSample
             var productCodeList = new List<string> { "101", "102", "103", "110", "111", "112" };
             var bulkWriteModelList = new List<WriteModel<Product>>();
 
-            foreach(var productCode in productCodeList)
+            foreach (var productCode in productCodeList)
             {
                 var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductCode, productCode);
                 var updateDefinition = Builders<Product>.Update
                     .Set(p => p.ProductName, $"New product {productCode}")
                     .Set(p => p.Price, 40);
 
-                bulkWriteModelList.Add(new UpdateOneModel<Product>(filterDefinition, updateDefinition) { IsUpsert = true});
+                bulkWriteModelList.Add(new UpdateOneModel<Product>(filterDefinition, updateDefinition) { IsUpsert = true });
             }
 
             productCollection.BulkWrite(bulkWriteModelList);
 
             LoadProductData();
+        }
+
+        private void GetByIdButton_Click(object sender, RoutedEventArgs e)
+        {
+            var productId = "6731b16a8dc5c20f9c129c51";
+            var filterDefinition = Builders<Product>.Filter.Eq(p => p.ProductId, productId);
+            var product = productCollection.Find(filterDefinition).FirstOrDefault();
+
+            if (product != null)
+                MessageBox.Show($"Product Name: {product.ProductName} | Product Code : {product.ProductCode}");
+            else
+                MessageBox.Show("No product exists");
+        }
+
+        private void CreateIndex()
+        {
+            var indexKeys = Builders<Product>.IndexKeys;
+            var indexList = new List<CreateIndexModel<Product>>
+            {
+                new CreateIndexModel<Product>
+                    (indexKeys.Ascending(p => p.ProductCode), new CreateIndexOptions { Unique= true}),
+                new CreateIndexModel<Product>
+                    (indexKeys
+                        .Descending(p => p.Price)
+                        .Ascending(p => p.ProductCode)
+                    , new CreateIndexOptions { Name = "Price_Index" })
+            };
+
+            productCollection.Indexes.CreateMany(indexList);
+        }
+
+        private void LoadCursorDataButtonn_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(async () => await LoadCursorData());
+        }
+
+        private async Task LoadCursorData()
+        {
+            var filterDefinition = Builders<Product>.Filter.Empty;
+
+            using (var cursor = await productCollection.FindAsync
+                (filterDefinition, new FindOptions<Product> { BatchSize = 100 }))
+            {
+                while (await cursor.MoveNextAsync())
+                {
+                    var productList = cursor.Current.ToList();
+
+                    foreach (var product in productList)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            productListBox.Items.Add(product.ProductName);
+                        });
+                    }
+                }
+            }
+        }
+
+        private void SwitchButton_Click(object sender, RoutedEventArgs e)
+        {
+            var sample2Window = new Sample2Window();
+
+            sample2Window.Show();
         }
     }
 }

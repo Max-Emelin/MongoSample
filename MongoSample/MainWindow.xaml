@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MongoSample"
         mc:Ignorable="d"
-        Title="Products" Height="450" Width="850">
+        Title="Products" Height="450" Width="1300">
 
     <Window.Resources>
         <Style x:Key="ButtonStyle" TargetType="Button">
@@ -85,7 +85,9 @@
         />
         
         <DataGrid x:Name="productDataGridView"
-                Margin="15,180,15,50" 
+                Width="750"
+                HorizontalAlignment="Left"
+                Margin="15,180,0,50" 
                 AutoGenerateColumns="True"  
                 ItemsSource="{Binding productCollection}" 
                 FontSize="16"    
@@ -144,7 +146,13 @@
                 Margin="620,80,0,0" 
                 Style="{StaticResource ButtonStyle}" 
                 Click="BulkWriteButton_Click" 
-        />  
+        />
+        <Button x:Name="GetByIdButton"
+                Content="Get By Id" 
+                Margin="620,125,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="GetByIdButton_Click" 
+        />
 
         <Label x:Name="productCountLabel"
             Content="Count: 0" 
@@ -152,6 +160,30 @@
             Style="{StaticResource LabelStyle}"
             VerticalAlignment="Bottom"
         />
+
+        <Button x:Name="SwitchButton"
+                Content="Switch" 
+                Margin="1190,10,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Click="SwitchButton_Click" 
+                Background="#FFCE4C4C"
+        />
+        <Button x:Name="LoadCursorDataButton"
+                Content="Load Cursor Data" 
+                Margin="935,80,0,0" 
+                Style="{StaticResource ButtonStyle}" 
+                Width="200"
+                Click="LoadCursorDataButtonn_Click" 
+        />
+        <ListBox x:Name="productListBox"
+                 Margin="0,180,15,50" 
+                 Width="500"
+                 HorizontalAlignment="Right"
+                 BorderBrush="DarkSlateGray"       
+                 Background="Transparent"
+                 FontSize="16" 
+        />
         
+
     </Grid>
 </Window>
